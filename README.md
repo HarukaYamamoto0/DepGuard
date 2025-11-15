@@ -167,4 +167,4 @@ npm test
 ## 🛡 License
 
 Distributed under the **MIT License**.
-See [`LICENSE`](LICENSE) for details.
+See [`LICENSE`](./ICENSE) for details.

@@ -39,5 +39,19 @@
     "typescript": "^5.9.3",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2"
+  },
+  "bugs": {
+    "url": "https://github.com/HarukaYamamoto0/DepGuard/issues",
+    "email": "harukayamamotodev@gmail.com"
+  },
+  "license": "MIT",
+  "author": "HarukaYamamoto0 <harukayamamotodev@gmail.com> (https://harukadev.com)",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/HarukaYamamoto0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HarukaYamamoto0/DepGuard.git"
   }
 }
