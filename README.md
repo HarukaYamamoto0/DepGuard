@@ -1,71 +1,170 @@
-# depguard README
+# 🚨 DepGuard
 
-This is the README for your extension "depguard". After writing up a brief description, we recommend including the following sections.
+## _Your VS Code watchdog for outdated & vulnerable npm dependencies._
 
-## Features
+<div align="left">
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+**DepGuard** automatically monitors your project’s dependencies — in real time — detecting:
 
-For example if there is an image subfolder under your extension project workspace:
+- ⚡ Outdated versions (major/minor/patch)
+- 🔐 Security vulnerabilities (via npm Advisory DB)
+- 🎨 Inline color-coded diagnostics
+- 🛠️ Quick Fix to update dependencies instantly
+- 🚀 Background scanning & caching
 
-\!\[feature X\]\(images/feature-x.png\)
+</div>
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## 📦 Features
 
-## Requirements
+### Outdated dependency detection
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+DepGuard checks every dependency listed in:
 
-## Extension Settings
+- `dependencies`
+- `devDependencies`
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+And flags updates using semantic version diff:
 
-For example:
+| Update type | Example         | Severity color |
+| ----------- | --------------- | -------------- |
+| **Major**   | `1.x → 2.x`     | 🔴 Error       |
+| **Minor**   | `1.2 → 1.3`     | 🟡 Warning     |
+| **Patch**   | `1.2.3 → 1.2.4` | 🔵 Info        |
 
-This extension contributes the following settings:
+### Security vulnerability alerts (npm advisories)
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+DepGuard warns you _right inside_ your `package.json`:
 
-## Known Issues
+- Advisory severity (low / moderate / high / critical)
+- Advisory titles
+- Patched versions
+- Links to the GitHub advisory
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+### Quick Fix: Update dependency with one click
 
-## Release Notes
+Hover → Fix → Done ✨
 
-Users appreciate release notes as you update your extension.
+```jsonc
+"cookie": "0.5.0"
+// Quick Fix: Update to "^1.0.2"
+```
 
-### 1.0.0
+DepGuard respects the prefix:
 
-Initial release of ...
+- `^`
+- `~`
+- Exact version
 
-### 1.0.1
+### Smart caching (no rate limit drama)
 
-Fixed issue #.
+DepGuard caches:
 
-### 1.1.0
+- Latest versions
+- Vulnerability results
+- Workspace-wide prewarm cache
 
-Added features X, Y, and Z.
+This keeps everything fast even in huge monorepos.
 
----
+### Background scanning every 30 minutes
 
-## Following extension guidelines
+DepGuard keeps monitoring silently, refreshing:
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+- Version cache
+- Vulnerability data
+- Diagnostics across all open editors
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+### Ignored locations
 
-## Working with Markdown
+By design, DepGuard **never** scans:
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+- `node_modules/`
+- `.pnpm/`
+- `.yarn/`
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+Even if you open those package.json files manually.
 
-## For more information
+## Screenshots
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+<img width="474" height="922" alt="image" src="https://github.com/user-attachments/assets/568d47e1-cc93-435b-a4f6-14b371d2221b" />
 
-**Enjoy!**
+<img width="705" height="134" alt="quick fix" src="https://github.com/user-attachments/assets/8df01c00-d336-4cf5-a597-f9c807d25e5e" />
+
+### Showing security feature
+
+<img width="1040" height="181" alt="security" src="https://github.com/user-attachments/assets/1a23354e-5a69-4a05-ac98-046bd0f7a3fa" />
+
+### Showing quick fix
+
+<img width="171" height="120" alt="quick fix" src="https://github.com/user-attachments/assets/f36b1a7b-3ed9-4227-b2c6-3055a9c6be3f" />
+
+## Installation
+
+### From VS Code Marketplace
+
+[URL when published](https://harukadev.com)
+
+### From VSIX locally
+
+```bash
+code --install-extension depguard-1.0.0.vsix
+```
+
+## Settings (coming next)
+
+| Setting                       | Description                                 | Default |
+| ----------------------------- | ------------------------------------------- | ------- |
+| `depguard.security.enabled`   | Enables/disables security advisory scanning | `true`  |
+| `depguard.backgroundInterval` | Time between automatic rescans              | `30min` |
+| `depguard.ignore`             | Packages to ignore                          | `[]`    |
+
+## Commands
+
+### `DepGuard: Scan current package.json`
+
+Useful when you disable automatic scanning or want to quickly refresh results.
+
+## Project Structure
+
+```
+src
+│
+├── extension.ts                # Entry point
+├── activity.ts                 # Status bar + request counter
+├── npmClient.ts                # NPM API calls + caching
+├── semverUtils.ts              # Version diff & semver logic
+├── diagnostics.ts              # Main scanner + diagnostics
+├── codeActions.ts              # Quick Fix provider
+└── workspace.ts                # Workspace prewarm
+```
+
+## 🤝 Contributing
+
+PRs, issues, and suggestions are super welcome!
+
+If you want to contribute:
+
+```bash
+npm install
+npm run watch
+# Press F5 to open Extension Development Host
+```
+
+## 🧪 Testing
+
+```bash
+npm test
+```
+
+## 📅 Roadmap
+
+- [ ] “Update All Safe Dependencies” (patch+minor only)
+- [ ] Settings UI
+- [ ] Ignore specific advisories
+- [ ] Sidebar with dependency health report
+- [ ] pnpm/yarn lockfile integration
+- [ ] Version drift detection across monorepos
+
+## 🛡 License
+
+Distributed under the **MIT License**.
+See [`LICENSE`](LICENSE) for details.
