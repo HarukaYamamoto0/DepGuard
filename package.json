@@ -4,6 +4,7 @@
   "description": "Automatic dependency watchdog: detects outdated npm packages, vulnerabilities, and more.",
   "version": "1.0.0",
   "publisher": "harukadev",
+  "icon": "images/logo.png",
   "engines": {
     "vscode": "^1.106.0"
   },

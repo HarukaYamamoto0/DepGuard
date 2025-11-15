@@ -5,6 +5,7 @@ node_modules
 *.vsix
 .env
 .idea
+depguard-*.vsix
 
 # Logs
 logs
