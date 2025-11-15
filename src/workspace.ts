@@ -2,11 +2,13 @@ import * as vscode from "vscode";
 import { getLatestVersionCached } from "./npmClient";
 
 /**
- * Varre o workspace, coleta todas as deps de todos os package.json
- * (ignorando node_modules) e preenche o cache de versões em background.
+ * Scans the workspace, collects all dependencies from all package.json files
+ * (ignoring node_modules) and populates the version cache in the background.
  */
 export async function prewarmWorkspaceDependencies(): Promise<void> {
-  if (!vscode.workspace.workspaceFolders) return;
+  if (!vscode.workspace.workspaceFolders) {
+    return;
+  }
 
   const packageJsonFiles = await vscode.workspace.findFiles(
     "**/package.json",
@@ -31,12 +33,14 @@ export async function prewarmWorkspaceDependencies(): Promise<void> {
         depNames.add(name);
       }
     } catch {
-      // ignora package.json inválido ou erro de IO
+      // Ignore invalid package.json or I/O error.
     }
   }
 
   const names = Array.from(depNames);
-  if (names.length === 0) return;
+  if (names.length === 0) {
+    return;
+  }
 
   const concurrency = 5;
   let index = 0;
@@ -44,12 +48,14 @@ export async function prewarmWorkspaceDependencies(): Promise<void> {
   async function worker() {
     while (true) {
       const i = index++;
-      if (i >= names.length) break;
+      if (i >= names.length) {
+        break;
+      }
       const name = names[i];
       try {
         await getLatestVersionCached(name);
       } catch {
-        // ignora erro individual
+        // ignores individual error
       }
     }
   }

@@ -18,20 +18,25 @@ export const DIAG_CODE_OUTDATED = "depguard.outdated";
 export const DIAG_CODE_VULNERABLE = "depguard.vulnerable";
 
 /**
- * Garante que é um package.json válido do projeto (não dentro de node_modules).
+ * Ensures it's a valid package.json file from the project (not inside node_modules).
  */
 export function isPackageJsonDocument(doc: vscode.TextDocument): boolean {
   const fileName = doc.fileName;
-  if (!fileName.endsWith("package.json")) return false;
-  if (fileName.includes("/node_modules/")) return false;
-  if (fileName.includes("\\node_modules\\")) return false;
+  if (!fileName.endsWith("package.json")) {
+    return false;
+  }
+  if (fileName.includes("/node_modules/")) {
+    return false;
+  }
+  if (fileName.includes("\\node_modules\\")) {
+    return false;
+  }
   return true;
 }
 
 /**
- * Faz o scan completo de um package.json e atualiza o DiagnosticCollection.
- * Os diagnostics vão sendo adicionados incrementalmente à medida que as
- * requisições ao npm retornam.
+ * Performs a full scan of a package.json file and updates the DiagnosticCollection.
+ * Diagnostics are added incrementally as requests to npm return.
  */
 export async function scanPackageJsonDocument(
   doc: vscode.TextDocument,
@@ -71,8 +76,8 @@ export async function scanPackageJsonDocument(
 }
 
 /**
- * Agenda checks de versão + vulnerabilidade para uma dependência específica.
- * Usa then/catch para manter comportamento não bloqueante.
+ * Schedules version checks + vulnerability checks for a specific dependency.
+ * Uses then/catch to maintain non-blocking behavior.
  */
 function scheduleChecksForDependency(
   doc: vscode.TextDocument,
@@ -84,15 +89,22 @@ function scheduleChecksForDependency(
 ) {
   const cleanCurrent = cleanDeclaredVersion(declaredVersion);
 
-  // 1) Check de versão (outdated)
   getLatestVersionCached(depName)
     .then((latest) => {
-      if (!latest) return;
-      if (latest === cleanCurrent) return;
-      if (doc.isClosed) return;
+      if (!latest) {
+        return;
+      }
+      if (latest === cleanCurrent) {
+        return;
+      }
+      if (doc.isClosed) {
+        return;
+      }
 
       const range = findVersionRange(doc, fullText, depName, declaredVersion);
-      if (!range) return;
+      if (!range) {
+        return;
+      }
 
       const diff: SemverDiff = diffSemver(cleanCurrent, latest);
       const severity = mapDiffToSeverity(diff);
@@ -115,17 +127,22 @@ function scheduleChecksForDependency(
       collection.set(doc.uri, [...diagsForDoc]);
     })
     .catch(() => {
-      // ignora erro
+      // ignore error
     });
 
-  // 2) Check de vulnerabilidades na versão atual
   getVulnerabilitiesCached(depName, cleanCurrent)
     .then((advisories) => {
-      if (!advisories || advisories.length === 0) return;
-      if (doc.isClosed) return;
+      if (!advisories || advisories.length === 0) {
+        return;
+      }
+      if (doc.isClosed) {
+        return;
+      }
 
       const range = findVersionRange(doc, fullText, depName, declaredVersion);
-      if (!range) return;
+      if (!range) {
+        return;
+      }
 
       const highestSeverity = getHighestSeverity(advisories);
       const severity = mapAdvisorySeverityToDiagnostic(highestSeverity);
@@ -143,8 +160,12 @@ function scheduleChecksForDependency(
       msgParts.push(
         `Security vulnerabilities (${highestSeverity}) found in ${depName}@${cleanCurrent}.`
       );
-      if (titles) msgParts.push(titles);
-      if (patched) msgParts.push(`Patched in: ${patched}`);
+      if (titles) {
+        msgParts.push(titles);
+      }
+      if (patched) {
+        msgParts.push(`Patched in: ${patched}`);
+      }
 
       const diag = new vscode.Diagnostic(range, msgParts.join(" "), severity);
       diag.source = DIAG_SOURCE;
@@ -159,12 +180,12 @@ function scheduleChecksForDependency(
       collection.set(doc.uri, [...diagsForDoc]);
     })
     .catch(() => {
-      // ignora erro
+      // ignore error
     });
 }
 
 /**
- * Acha o range da string de versão no texto do documento.
+ * Find the version string range in the document text.
  *
  *  "react": "18.2.0"
  *               ^^^^^ (range)
@@ -177,14 +198,20 @@ function findVersionRange(
 ): vscode.Range | null {
   const key = `"${depName}"`;
   const keyIndex = fullText.indexOf(key);
-  if (keyIndex === -1) return null;
+  if (keyIndex === -1) {
+    return null;
+  }
 
   const colonIndex = fullText.indexOf(":", keyIndex);
-  if (colonIndex === -1) return null;
+  if (colonIndex === -1) {
+    return null;
+  }
 
   const firstQuote = fullText.indexOf('"', colonIndex);
   const secondQuote = fullText.indexOf('"', firstQuote + 1);
-  if (firstQuote === -1 || secondQuote === -1) return null;
+  if (firstQuote === -1 || secondQuote === -1) {
+    return null;
+  }
 
   const startPos = doc.positionAt(firstQuote + 1);
   const endPos = doc.positionAt(secondQuote);

@@ -23,17 +23,21 @@ export function activate(context: vscode.ExtensionContext) {
     await scanPackageJsonDocument(doc, diagnostics);
   }
 
-  // Escutar abrir/salvar
+  // Listen, open/save
   context.subscriptions.push(
     vscode.workspace.onDidOpenTextDocument((doc) => {
-      if (isPackageJsonDocument(doc)) scan(doc);
+      if (isPackageJsonDocument(doc)) {
+        scan(doc);
+      }
     }),
     vscode.workspace.onDidSaveTextDocument((doc) => {
-      if (isPackageJsonDocument(doc)) scan(doc);
+      if (isPackageJsonDocument(doc)) {
+        scan(doc);
+      }
     })
   );
 
-  // Scan inicial do arquivo aberto
+  // Initial scan of the open file.
   if (
     vscode.window.activeTextEditor &&
     isPackageJsonDocument(vscode.window.activeTextEditor.document)
@@ -41,9 +45,9 @@ export function activate(context: vscode.ExtensionContext) {
     scan(vscode.window.activeTextEditor.document);
   }
 
-  // Comando manual (Command Palette)
+  // Manual control (Command Palette)
   const cmd = vscode.commands.registerCommand(
-    "depguard.scanCurrentFile", // lembra de definir no package.json
+    "depguard.scanCurrentFile",
     () => {
       const editor = vscode.window.activeTextEditor;
       if (editor && isPackageJsonDocument(editor.document)) {
@@ -69,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  // Rescan periódico a cada 30min
+  // Periodic Rescan every 30min
   const intervalMs = 30 * 60 * 1000;
   const timer = setInterval(() => {
     clearCaches();
@@ -88,5 +92,5 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-  // nada específico por enquanto
+  // Nothing specific for now.
 }

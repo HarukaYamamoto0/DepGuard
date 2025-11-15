@@ -17,7 +17,7 @@ export interface Advisory {
   patchedVersions?: string;
 }
 
-// Cache simples em memória pra evitar flood no registry
+// Simple in-memory caching to prevent registry flooding.
 const versionCache = new Map<string, string>();
 const vulnerabilityCache = new Map<string, Advisory[]>();
 
@@ -27,13 +27,15 @@ export function clearCaches() {
 }
 
 /**
- * Versão latest com cache.
+ * Latest version with cache.
  */
 export async function getLatestVersionCached(
   pkgName: string
 ): Promise<string | null> {
   const cached = versionCache.get(pkgName);
-  if (cached) return cached;
+  if (cached) {
+    return cached;
+  }
 
   beginNetworkRequest();
   try {
@@ -48,7 +50,7 @@ export async function getLatestVersionCached(
 }
 
 /**
- * Vulnerabilidades para (pkgName, version) com cache.
+ * Vulnerabilities for (pkgName, version) with cache.
  */
 export async function getVulnerabilitiesCached(
   pkgName: string,
@@ -56,7 +58,9 @@ export async function getVulnerabilitiesCached(
 ): Promise<Advisory[]> {
   const key = `${pkgName}@${version}`;
   const cached = vulnerabilityCache.get(key);
-  if (cached) return cached;
+  if (cached) {
+    return cached;
+  }
 
   beginNetworkRequest();
   try {
@@ -111,12 +115,6 @@ function fetchLatestVersion(pkgName: string): Promise<string | null> {
 
 /**
  * POST https://registry.npmjs.org/-/npm/v1/security/advisories/bulk
- *
- * Body esperado pelo endpoint:
- * {
- *   "cookie": ["0.5.0"],
- *   "express": ["4.17.1"]
- * }
  */
 function fetchVulnerabilities(
   pkgName: string,
@@ -167,7 +165,7 @@ function fetchVulnerabilities(
     );
 
     req.on("error", () => resolve([]));
-    req.write(body); // <- JSON.stringify no body (como você pediu)
+    req.write(body);
     req.end();
   });
 }

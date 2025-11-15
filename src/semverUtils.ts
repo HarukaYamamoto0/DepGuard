@@ -8,18 +8,28 @@ export function cleanDeclaredVersion(raw: string): string {
 
 function parseSemver(v: string): [number, number, number] | null {
   const m = v.match(/^(\d+)\.(\d+)\.(\d+)/);
-  if (!m) return null;
+  if (!m) {
+    return null;
+  }
   return [parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10)];
 }
 
 export function diffSemver(current: string, latest: string): SemverDiff {
   const c = parseSemver(current);
   const l = parseSemver(latest);
-  if (!c || !l) return "unknown";
+  if (!c || !l) {
+    return "unknown";
+  }
 
-  if (l[0] > c[0]) return "major";
-  if (l[0] === c[0] && l[1] > c[1]) return "minor";
-  if (l[0] === c[0] && l[1] === c[1] && l[2] > c[2]) return "patch";
+  if (l[0] > c[0]) {
+    return "major";
+  }
+  if (l[0] === c[0] && l[1] > c[1]) {
+    return "minor";
+  }
+  if (l[0] === c[0] && l[1] === c[1] && l[2] > c[2]) {
+    return "patch";
+  }
 
   return "unknown";
 }
@@ -27,18 +37,18 @@ export function diffSemver(current: string, latest: string): SemverDiff {
 export function mapDiffToSeverity(diff: SemverDiff): vscode.DiagnosticSeverity {
   switch (diff) {
     case "major":
-      return vscode.DiagnosticSeverity.Error; // vermelho
+      return vscode.DiagnosticSeverity.Error; // Red
     case "minor":
-      return vscode.DiagnosticSeverity.Warning; // amarelo
+      return vscode.DiagnosticSeverity.Warning; // Yellow
     case "patch":
-      return vscode.DiagnosticSeverity.Information; // azul
+      return vscode.DiagnosticSeverity.Information; // Blue
     default:
       return vscode.DiagnosticSeverity.Hint;
   }
 }
 
 /**
- * Preserva ^ / ~ da versão original.
+ * Preserves ^ / ~ from the original version.
  * Ex: "^4.0.0" + "4.1.2" → "^4.1.2"
  */
 export function buildNewVersionText(

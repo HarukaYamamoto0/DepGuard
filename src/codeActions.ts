@@ -30,7 +30,9 @@ export class PackageVersionCodeActionProvider
           }
         | undefined;
 
-      if (!data) continue;
+      if (!data) {
+        continue;
+      }
 
       const newVersionText =
         data.newVersionText ??

@@ -28,7 +28,9 @@ export function endNetworkRequest() {
 }
 
 function updateStatusBar() {
-  if (!statusBarItem) return;
+  if (!statusBarItem) {
+    return;
+  }
 
   if (pendingRequests > 0) {
     statusBarItem.text = `$(sync~spin) DepGuard checking (${pendingRequests})`;
