@@ -101,7 +101,7 @@ Even if you open those package.json files manually.
 
 ### From VS Code Marketplace
 
-[URL when published](https://harukadev.com)
+[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=harukadev.depguard)
 
 ### From VSIX locally
 
