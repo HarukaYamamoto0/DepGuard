@@ -1,27 +1,85 @@
-import typescriptEslint from "typescript-eslint";
+import typescriptEslint from 'typescript-eslint';
+import { defineConfig, globalIgnores } from 'eslint/config';
+import globals from 'globals';
+import tsEslint from 'typescript-eslint';
+import prettier from 'eslint-config-prettier';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import js from '@eslint/js';
+import { FlatCompat } from '@eslint/eslintrc';
 
-export default [{
-    files: ["**/*.ts"],
-}, {
-    plugins: {
-        "@typescript-eslint": typescriptEslint.plugin,
-    },
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all,
+});
+
+export default defineConfig([
+  globalIgnores(['**/.*', '**/*.json', 'dist/', 'build/', 'node_modules/']),
+  {
+    extends: [...compat.extends('eslint:recommended'), ...tsEslint.configs.recommended, prettier],
 
     languageOptions: {
-        parser: typescriptEslint.parser,
-        ecmaVersion: 2022,
-        sourceType: "module",
+      globals: {
+        ...globals.node,
+      },
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
+    plugins: {
+      '@typescript-eslint': typescriptEslint.plugin,
     },
 
     rules: {
-        "@typescript-eslint/naming-convention": ["warn", {
-            selector: "import",
-            format: ["camelCase", "PascalCase"],
-        }],
+      '@typescript-eslint/naming-convention': [
+        'warn',
+        {
+          selector: 'import',
+          format: ['camelCase', 'PascalCase'],
+        },
+      ],
 
-        curly: "warn",
-        eqeqeq: "warn",
-        "no-throw-literal": "warn",
-        semi: "warn",
+      curly: 'warn',
+      eqeqeq: 'warn',
+      'no-throw-literal': 'warn',
+      semi: 'warn',
+      'no-console': 'off',
+      'no-unused-vars': 'off',
+      'no-undef': 'off',
+      'no-empty': 'warn',
+      'no-empty-function': 'warn',
+      'no-extra-semi': 'error',
+      'no-irregular-whitespace': 'error',
+      'no-unreachable': 'error',
+      'no-unused-expressions': 'error',
+      'no-useless-escape': 'error',
+      'no-var': 'error',
+      'prefer-const': 'error',
+      'no-return-await': 'error',
+      'require-await': 'error',
+      'no-shadow': 'error',
+
+      'sort-vars': ['warn', { ignoreCase: true }],
+
+      'max-len': [
+        'warn',
+        {
+          code: 120,
+          tabWidth: 2,
+          ignoreUrls: true,
+          ignoreRegExpLiterals: true,
+          ignoreStrings: true,
+          ignoreTemplateLiterals: true,
+        },
+      ],
+      yoda: 'error',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+      '@typescript-eslint/no-non-null-assertion': 'warn',
     },
-}];
+  },
+]);

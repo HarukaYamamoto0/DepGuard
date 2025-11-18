@@ -1,12 +1,7 @@
-import * as https from "https";
-import { beginNetworkRequest, endNetworkRequest } from "./activity";
+import * as https from 'https';
+import { beginNetworkRequest, endNetworkRequest } from './activity';
 
-export type AdvisorySeverity =
-  | "low"
-  | "moderate"
-  | "high"
-  | "critical"
-  | "unknown";
+export type AdvisorySeverity = 'low' | 'moderate' | 'high' | 'critical' | 'unknown';
 
 export interface Advisory {
   id?: string;
@@ -29,9 +24,7 @@ export function clearCaches() {
 /**
  * Latest version with cache.
  */
-export async function getLatestVersionCached(
-  pkgName: string
-): Promise<string | null> {
+export async function getLatestVersionCached(pkgName: string): Promise<string | null> {
   const cached = versionCache.get(pkgName);
   if (cached) {
     return cached;
@@ -52,10 +45,7 @@ export async function getLatestVersionCached(
 /**
  * Vulnerabilities for (pkgName, version) with cache.
  */
-export async function getVulnerabilitiesCached(
-  pkgName: string,
-  version: string
-): Promise<Advisory[]> {
+export async function getVulnerabilitiesCached(pkgName: string, version: string): Promise<Advisory[]> {
   const key = `${pkgName}@${version}`;
   const cached = vulnerabilityCache.get(key);
   if (cached) {
@@ -76,9 +66,7 @@ export async function getVulnerabilitiesCached(
  * GET https://registry.npmjs.org/<pkg>/latest
  */
 function fetchLatestVersion(pkgName: string): Promise<string | null> {
-  const url = `https://registry.npmjs.org/${encodeURIComponent(
-    pkgName
-  )}/latest`;
+  const url = `https://registry.npmjs.org/${encodeURIComponent(pkgName)}/latest`;
 
   return new Promise((resolve, reject) => {
     https
@@ -94,12 +82,12 @@ function fetchLatestVersion(pkgName: string): Promise<string | null> {
           return;
         }
 
-        let body = "";
-        res.on("data", (chunk) => (body += chunk));
-        res.on("end", () => {
+        let body = '';
+        res.on('data', (chunk) => (body += chunk));
+        res.on('end', () => {
           try {
             const json = JSON.parse(body);
-            if (typeof json.version === "string") {
+            if (typeof json.version === 'string') {
               resolve(json.version);
             } else {
               resolve(null);
@@ -109,17 +97,14 @@ function fetchLatestVersion(pkgName: string): Promise<string | null> {
           }
         });
       })
-      .on("error", () => resolve(null));
+      .on('error', () => resolve(null));
   });
 }
 
 /**
  * POST https://registry.npmjs.org/-/npm/v1/security/advisories/bulk
  */
-function fetchVulnerabilities(
-  pkgName: string,
-  version: string
-): Promise<Advisory[]> {
+function fetchVulnerabilities(pkgName: string, version: string): Promise<Advisory[]> {
   const payload: Record<string, string[]> = {
     [pkgName]: [version],
   };
@@ -128,12 +113,12 @@ function fetchVulnerabilities(
   return new Promise((resolve) => {
     const req = https.request(
       {
-        method: "POST",
-        hostname: "registry.npmjs.org",
-        path: "/-/npm/v1/security/advisories/bulk",
+        method: 'POST',
+        hostname: 'registry.npmjs.org',
+        path: '/-/npm/v1/security/advisories/bulk',
         headers: {
-          "Content-Type": "application/json",
-          "Content-Length": Buffer.byteLength(body),
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body),
         },
       },
       (res) => {
@@ -143,9 +128,9 @@ function fetchVulnerabilities(
           return;
         }
 
-        let data = "";
-        res.on("data", (chunk) => (data += chunk));
-        res.on("end", () => {
+        let data = '';
+        res.on('data', (chunk) => (data += chunk));
+        res.on('end', () => {
           try {
             if (!data) {
               resolve([]);
@@ -161,19 +146,17 @@ function fetchVulnerabilities(
             resolve([]);
           }
         });
-      }
+      },
     );
 
-    req.on("error", () => resolve([]));
+    req.on('error', () => resolve([]));
     req.write(body);
     req.end();
   });
 }
 
 function normalizeAdvisory(raw: any): Advisory {
-  const severity = String(
-    raw.severity ?? "unknown"
-  ).toLowerCase() as AdvisorySeverity;
+  const severity = String(raw.severity ?? 'unknown').toLowerCase() as AdvisorySeverity;
 
   return {
     id: raw.id?.toString() ?? undefined,

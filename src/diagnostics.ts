@@ -1,34 +1,25 @@
-import * as vscode from "vscode";
-import {
-  Advisory,
-  AdvisorySeverity,
-  getLatestVersionCached,
-  getVulnerabilitiesCached,
-} from "./npmClient";
-import {
-  SemverDiff,
-  buildNewVersionText,
-  cleanDeclaredVersion,
-  diffSemver,
-  mapDiffToSeverity,
-} from "./semverUtils";
+import * as vscode from 'vscode';
+import type { Advisory, AdvisorySeverity } from './npmClient';
+import { getLatestVersionCached, getVulnerabilitiesCached } from './npmClient';
+import type { SemverDiff } from './semverUtils';
+import { buildNewVersionText, cleanDeclaredVersion, diffSemver, mapDiffToSeverity } from './semverUtils';
 
-export const DIAG_SOURCE = "DepGuard";
-export const DIAG_CODE_OUTDATED = "depguard.outdated";
-export const DIAG_CODE_VULNERABLE = "depguard.vulnerable";
+export const DIAG_SOURCE = 'DepGuard';
+export const DIAG_CODE_OUTDATED = 'depguard.outdated';
+export const DIAG_CODE_VULNERABLE = 'depguard.vulnerable';
 
 /**
  * Ensures it's a valid package.json file from the project (not inside node_modules).
  */
 export function isPackageJsonDocument(doc: vscode.TextDocument): boolean {
   const fileName = doc.fileName;
-  if (!fileName.endsWith("package.json")) {
+  if (!fileName.endsWith('package.json')) {
     return false;
   }
-  if (fileName.includes("/node_modules/")) {
+  if (fileName.includes('/node_modules/')) {
     return false;
   }
-  if (fileName.includes("\\node_modules\\")) {
+  if (fileName.includes('\\node_modules\\')) {
     return false;
   }
   return true;
@@ -38,10 +29,7 @@ export function isPackageJsonDocument(doc: vscode.TextDocument): boolean {
  * Performs a full scan of a package.json file and updates the DiagnosticCollection.
  * Diagnostics are added incrementally as requests to npm return.
  */
-export async function scanPackageJsonDocument(
-  doc: vscode.TextDocument,
-  collection: vscode.DiagnosticCollection
-): Promise<void> {
+export function scanPackageJsonDocument(doc: vscode.TextDocument, collection: vscode.DiagnosticCollection): void {
   if (!isPackageJsonDocument(doc)) {
     return;
   }
@@ -64,14 +52,7 @@ export async function scanPackageJsonDocument(
   collection.set(doc.uri, diagsForDoc);
 
   for (const [name, declaredVersion] of Object.entries(deps)) {
-    scheduleChecksForDependency(
-      doc,
-      text,
-      name,
-      declaredVersion,
-      diagsForDoc,
-      collection
-    );
+    scheduleChecksForDependency(doc, text, name, declaredVersion, diagsForDoc, collection);
   }
 }
 
@@ -85,7 +66,7 @@ function scheduleChecksForDependency(
   depName: string,
   declaredVersion: string,
   diagsForDoc: vscode.Diagnostic[],
-  collection: vscode.DiagnosticCollection
+  collection: vscode.DiagnosticCollection,
 ) {
   const cleanCurrent = cleanDeclaredVersion(declaredVersion);
 
@@ -112,7 +93,7 @@ function scheduleChecksForDependency(
       const diag = new vscode.Diagnostic(
         range,
         `Newer version available (${diff}): ${declaredVersion} → ${latest}`,
-        severity
+        severity,
       );
       diag.source = DIAG_SOURCE;
       diag.code = DIAG_CODE_OUTDATED;
@@ -150,16 +131,14 @@ function scheduleChecksForDependency(
       const titles = advisories
         .map((a) => a.title)
         .filter(Boolean)
-        .join("; ");
+        .join('; ');
       const patched = advisories
         .map((a) => a.patchedVersions)
         .filter(Boolean)
-        .join(", ");
+        .join(', ');
 
       const msgParts: string[] = [];
-      msgParts.push(
-        `Security vulnerabilities (${highestSeverity}) found in ${depName}@${cleanCurrent}.`
-      );
+      msgParts.push(`Security vulnerabilities (${highestSeverity}) found in ${depName}@${cleanCurrent}.`);
       if (titles) {
         msgParts.push(titles);
       }
@@ -167,7 +146,7 @@ function scheduleChecksForDependency(
         msgParts.push(`Patched in: ${patched}`);
       }
 
-      const diag = new vscode.Diagnostic(range, msgParts.join(" "), severity);
+      const diag = new vscode.Diagnostic(range, msgParts.join(' '), severity);
       diag.source = DIAG_SOURCE;
       diag.code = DIAG_CODE_VULNERABLE;
       (diag as any).data = {
@@ -194,7 +173,7 @@ function findVersionRange(
   doc: vscode.TextDocument,
   fullText: string,
   depName: string,
-  depVersion: string
+  depVersion: string,
 ): vscode.Range | null {
   const key = `"${depName}"`;
   const keyIndex = fullText.indexOf(key);
@@ -202,7 +181,7 @@ function findVersionRange(
     return null;
   }
 
-  const colonIndex = fullText.indexOf(":", keyIndex);
+  const colonIndex = fullText.indexOf(':', keyIndex);
   if (colonIndex === -1) {
     return null;
   }
@@ -220,24 +199,21 @@ function findVersionRange(
 }
 
 function getHighestSeverity(advisories: Advisory[]): AdvisorySeverity {
-  const order: AdvisorySeverity[] = ["low", "moderate", "high", "critical"];
+  const order: AdvisorySeverity[] = ['low', 'moderate', 'high', 'critical'];
   return advisories.reduce<AdvisorySeverity>(
-    (acc, a) =>
-      order.indexOf(a.severity) > order.indexOf(acc) ? a.severity : acc,
-    "low"
+    (acc, a) => (order.indexOf(a.severity) > order.indexOf(acc) ? a.severity : acc),
+    'low',
   );
 }
 
-function mapAdvisorySeverityToDiagnostic(
-  severity: AdvisorySeverity
-): vscode.DiagnosticSeverity {
+function mapAdvisorySeverityToDiagnostic(severity: AdvisorySeverity): vscode.DiagnosticSeverity {
   switch (severity) {
-    case "critical":
-    case "high":
+    case 'critical':
+    case 'high':
       return vscode.DiagnosticSeverity.Error;
-    case "moderate":
+    case 'moderate':
       return vscode.DiagnosticSeverity.Warning;
-    case "low":
+    case 'low':
       return vscode.DiagnosticSeverity.Information;
     default:
       return vscode.DiagnosticSeverity.Hint;

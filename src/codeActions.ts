@@ -1,18 +1,14 @@
-import * as vscode from "vscode";
-import { DIAG_CODE_OUTDATED, DIAG_SOURCE } from "./diagnostics";
-import { buildNewVersionText } from "./semverUtils";
+import * as vscode from 'vscode';
+import { DIAG_CODE_OUTDATED, DIAG_SOURCE } from './diagnostics';
+import { buildNewVersionText } from './semverUtils';
 
-export class PackageVersionCodeActionProvider
-  implements vscode.CodeActionProvider
-{
-  public static readonly providedCodeActionKinds = [
-    vscode.CodeActionKind.QuickFix,
-  ];
+export class PackageVersionCodeActionProvider implements vscode.CodeActionProvider {
+  public static readonly providedCodeActionKinds = [vscode.CodeActionKind.QuickFix];
 
   provideCodeActions(
     document: vscode.TextDocument,
     _range: vscode.Range,
-    context: vscode.CodeActionContext
+    context: vscode.CodeActionContext,
   ): vscode.CodeAction[] {
     const actions: vscode.CodeAction[] = [];
 
@@ -34,13 +30,11 @@ export class PackageVersionCodeActionProvider
         continue;
       }
 
-      const newVersionText =
-        data.newVersionText ??
-        buildNewVersionText(data.declaredRange, data.latest);
+      const newVersionText = data.newVersionText ?? buildNewVersionText(data.declaredRange, data.latest);
 
       const action = new vscode.CodeAction(
         `Update ${data.pkgName} to ${newVersionText}`,
-        vscode.CodeActionKind.QuickFix
+        vscode.CodeActionKind.QuickFix,
       );
       action.diagnostics = [diag];
       action.isPreferred = true;

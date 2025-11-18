@@ -1,13 +1,9 @@
-import * as vscode from "vscode";
-import { initStatusBar } from "./activity";
-import {
-  DIAG_SOURCE,
-  isPackageJsonDocument,
-  scanPackageJsonDocument,
-} from "./diagnostics";
-import { clearCaches } from "./npmClient";
-import { prewarmWorkspaceDependencies } from "./workspace";
-import { PackageVersionCodeActionProvider } from "./codeActions";
+import * as vscode from 'vscode';
+import { initStatusBar } from './activity';
+import { DIAG_SOURCE, isPackageJsonDocument, scanPackageJsonDocument } from './diagnostics';
+import { clearCaches } from './npmClient';
+import { prewarmWorkspaceDependencies } from './workspace';
+import { PackageVersionCodeActionProvider } from './codeActions';
 
 export function activate(context: vscode.ExtensionContext) {
   const diagnostics = vscode.languages.createDiagnosticCollection(DIAG_SOURCE);
@@ -34,27 +30,21 @@ export function activate(context: vscode.ExtensionContext) {
       if (isPackageJsonDocument(doc)) {
         scan(doc);
       }
-    })
+    }),
   );
 
   // Initial scan of the open file.
-  if (
-    vscode.window.activeTextEditor &&
-    isPackageJsonDocument(vscode.window.activeTextEditor.document)
-  ) {
+  if (vscode.window.activeTextEditor && isPackageJsonDocument(vscode.window.activeTextEditor.document)) {
     scan(vscode.window.activeTextEditor.document);
   }
 
   // Manual control (Command Palette)
-  const cmd = vscode.commands.registerCommand(
-    "depguard.scanCurrentFile",
-    () => {
-      const editor = vscode.window.activeTextEditor;
-      if (editor && isPackageJsonDocument(editor.document)) {
-        scan(editor.document);
-      }
+  const cmd = vscode.commands.registerCommand('depguard.scanCurrentFile', () => {
+    const editor = vscode.window.activeTextEditor;
+    if (editor && isPackageJsonDocument(editor.document)) {
+      scan(editor.document);
     }
-  );
+  });
   context.subscriptions.push(cmd);
 
   // CodeActions (Quick Fix)
@@ -62,15 +52,14 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
       [
-        { language: "json", scheme: "file" },
-        { language: "jsonc", scheme: "file" },
+        { language: 'json', scheme: 'file' },
+        { language: 'jsonc', scheme: 'file' },
       ],
       codeActionProvider,
       {
-        providedCodeActionKinds:
-          PackageVersionCodeActionProvider.providedCodeActionKinds,
-      }
-    )
+        providedCodeActionKinds: PackageVersionCodeActionProvider.providedCodeActionKinds,
+      },
+    ),
   );
 
   // Periodic Rescan every 30min
@@ -79,11 +68,9 @@ export function activate(context: vscode.ExtensionContext) {
     clearCaches();
     prewarmWorkspaceDependencies().catch(() => {});
 
-    vscode.workspace.textDocuments
-      .filter(isPackageJsonDocument)
-      .forEach((d) => {
-        scan(d);
-      });
+    vscode.workspace.textDocuments.filter(isPackageJsonDocument).forEach((d) => {
+      scan(d);
+    });
   }, intervalMs);
 
   context.subscriptions.push({

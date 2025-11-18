@@ -1,9 +1,9 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 
-export type SemverDiff = "major" | "minor" | "patch" | "unknown";
+export type SemverDiff = 'major' | 'minor' | 'patch' | 'unknown';
 
 export function cleanDeclaredVersion(raw: string): string {
-  return raw.replace(/^[~^]/, "");
+  return raw.replace(/^[~^]/, '');
 }
 
 function parseSemver(v: string): [number, number, number] | null {
@@ -18,29 +18,29 @@ export function diffSemver(current: string, latest: string): SemverDiff {
   const c = parseSemver(current);
   const l = parseSemver(latest);
   if (!c || !l) {
-    return "unknown";
+    return 'unknown';
   }
 
   if (l[0] > c[0]) {
-    return "major";
+    return 'major';
   }
   if (l[0] === c[0] && l[1] > c[1]) {
-    return "minor";
+    return 'minor';
   }
   if (l[0] === c[0] && l[1] === c[1] && l[2] > c[2]) {
-    return "patch";
+    return 'patch';
   }
 
-  return "unknown";
+  return 'unknown';
 }
 
 export function mapDiffToSeverity(diff: SemverDiff): vscode.DiagnosticSeverity {
   switch (diff) {
-    case "major":
+    case 'major':
       return vscode.DiagnosticSeverity.Error; // Red
-    case "minor":
+    case 'minor':
       return vscode.DiagnosticSeverity.Warning; // Yellow
-    case "patch":
+    case 'patch':
       return vscode.DiagnosticSeverity.Information; // Blue
     default:
       return vscode.DiagnosticSeverity.Hint;
@@ -51,11 +51,8 @@ export function mapDiffToSeverity(diff: SemverDiff): vscode.DiagnosticSeverity {
  * Preserves ^ / ~ from the original version.
  * Ex: "^4.0.0" + "4.1.2" → "^4.1.2"
  */
-export function buildNewVersionText(
-  declaredRange: string,
-  latest: string
-): string {
+export function buildNewVersionText(declaredRange: string, latest: string): string {
   const m = declaredRange.match(/^([~^])/);
-  const prefix = m ? m[1] : "";
+  const prefix = m ? m[1] : '';
   return `${prefix}${latest}`;
 }

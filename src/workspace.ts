@@ -1,5 +1,5 @@
-import * as vscode from "vscode";
-import { getLatestVersionCached } from "./npmClient";
+import * as vscode from 'vscode';
+import { getLatestVersionCached } from './npmClient';
 
 /**
  * Scans the workspace, collects all dependencies from all package.json files
@@ -10,11 +10,7 @@ export async function prewarmWorkspaceDependencies(): Promise<void> {
     return;
   }
 
-  const packageJsonFiles = await vscode.workspace.findFiles(
-    "**/package.json",
-    "**/node_modules/**",
-    50
-  );
+  const packageJsonFiles = await vscode.workspace.findFiles('**/package.json', '**/node_modules/**', 50);
 
   const depNames = new Set<string>();
 

@@ -10,7 +10,7 @@
 - 🔐 Security vulnerabilities (via npm Advisory DB)
 - 🎨 Inline color-coded diagnostics
 - 🛠️ Quick Fix to update dependencies instantly
-- 🚀 Background scanning & caching
+- 🚀 Background scanning and caching
 
 </div>
 
@@ -26,7 +26,7 @@ DepGuard checks every dependency listed in:
 And flags updates using semantic version diff:
 
 | Update type | Example         | Severity color |
-| ----------- | --------------- | -------------- |
+|-------------|-----------------|----------------|
 | **Major**   | `1.x → 2.x`     | 🔴 Error       |
 | **Minor**   | `1.2 → 1.3`     | 🟡 Warning     |
 | **Patch**   | `1.2.3 → 1.2.4` | 🔵 Info        |
@@ -93,7 +93,7 @@ Even if you open those package.json files manually.
 
 <img width="1040" height="181" alt="security" src="https://github.com/user-attachments/assets/1a23354e-5a69-4a05-ac98-046bd0f7a3fa" />
 
-### Showing quick fix
+### Showing a quick fix
 
 <img width="171" height="120" alt="quick fix" src="https://github.com/user-attachments/assets/f36b1a7b-3ed9-4227-b2c6-3055a9c6be3f" />
 
@@ -112,7 +112,7 @@ code --install-extension depguard-1.0.0.vsix
 ## Settings (coming next)
 
 | Setting                       | Description                                 | Default |
-| ----------------------------- | ------------------------------------------- | ------- |
+|-------------------------------|---------------------------------------------|---------|
 | `depguard.security.enabled`   | Enables/disables security advisory scanning | `true`  |
 | `depguard.backgroundInterval` | Time between automatic rescans              | `30min` |
 | `depguard.ignore`             | Packages to ignore                          | `[]`    |
@@ -160,11 +160,11 @@ npm test
 - [ ] “Update All Safe Dependencies” (patch+minor only)
 - [ ] Settings UI
 - [ ] Ignore specific advisories
-- [ ] Sidebar with dependency health report
+- [ ] Sidebar with a dependency health report
 - [ ] pnpm/yarn lockfile integration
 - [ ] Version drift detection across monorepos
 
 ## 🛡 License
 
 Distributed under the **MIT License**.
-See [`LICENSE`](./ICENSE) for details.
+See [`LICENSE`](./LICENSE) for details.
