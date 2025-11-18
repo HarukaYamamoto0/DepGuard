@@ -85,17 +85,17 @@ Even if you open those package.json files manually.
 
 ## Screenshots
 
-<img width="474" height="922" alt="image" src="https://github.com/user-attachments/assets/568d47e1-cc93-435b-a4f6-14b371d2221b" />
+<img width="474" height="922" alt="image" src="./images/screenshot_main.png" />
 
-<img width="705" height="134" alt="quick fix" src="https://github.com/user-attachments/assets/8df01c00-d336-4cf5-a597-f9c807d25e5e" />
+<img width="705" height="134" alt="quick fix" src="./images/show_hint.png" />
 
 ### Showing security feature
 
-<img width="1040" height="181" alt="security" src="https://github.com/user-attachments/assets/1a23354e-5a69-4a05-ac98-046bd0f7a3fa" />
+<img width="1040" height="181" alt="security" src="./images/showing_security_feature.png" />
 
 ### Showing a quick fix
 
-<img width="171" height="120" alt="quick fix" src="https://github.com/user-attachments/assets/f36b1a7b-3ed9-4227-b2c6-3055a9c6be3f" />
+<img width="171" height="120" alt="quick fix" src="./images/showing_quick_fix.png" />
 
 ## Installation
 
@@ -125,7 +125,7 @@ Useful when you disable automatic scanning or want to quickly refresh results.
 
 ## Project Structure
 
-```
+```shell
 src
 │
 ├── extension.ts                # Entry point
